@@ -1,66 +1,41 @@
-const mongoose=require('mongoose');
-
-
-
-
-mongoose.connect("mongodb://localhost/playground")
-        .then(()=>console.log("Connecting database..."))
-        .catch((err)=>{
-                console.log("Something went wrong:"+err)
+const findCourse=require('./courses/course.js')
+const express=require('express')
+const app=express()
+//console.log(findCourse())
+var tags=["rest","node","API","javascript"]
+app.get('/',(req,res)=>{
+        findCourse.findByIdAndUpdate("5b1f8ec4472dc31fc47b4ccd",{tags:tags},{new:true},(err,doc)=>{
+                if (err) {
+                        console.log("something went wrong..")
+                        //mongoose.connection.close();
+                }
+                else{
+                        res.send(doc);
+                       // mongoose.connection.close();
+                }
         })
-
-
-const courseSehema=new mongoose.Schema({
-        name:String,
-        author:String,
-        tags:[String],
-        newField:String,
-        date:{type:Date,default:Date.now},
-        isPublished:Boolean
 })
 
 
-const Course=mongoose.model("Course",courseSehema)
-
-
-const course=new Course({
-        name:"Laravel REST API development",
-        author:"jobayer mahamud",
-        newField:"New field",
-        tags:["Node","Backend"],
-        isPublished:true
-})
-
-Course.findByIdAndUpdate("5b1f8ec4472dc31fc47b4ccd",{author:"Mosh hamadani"},{new:true},(err,doc)=>{
-        if (err) {
-                console.log("something went wrong..")
-                mongoose.connection.close();
-        }
-        else{
-                console.log(doc.author)
-                mongoose.connection.close();
-        }
-})
-
-/* course.save().then(()=>{
+app.post('/',(req,res)=>{
+        new findCourse(
+                {
+                        name:"Laravel REST API development",
+                        author:"jobayer mahamud",
+                        newField:"New field updated one...",
+                        tags:["Node","Backend"],
+                        isPublished:true
+                }
+        ).save().then(()=>{
         console.log("Saved again......")
-        mongoose.connection.close();
+        res.status(200).send("Saved....");
 }).catch(err=>{
         console.log(err)
 })
 
-*/
 
-/*Course.find()
-      .then((courses)=>{
-        for(var i=0;i<courses.length;i++){
-                console.log(courses[i]);
-        }
-        
-        mongoose.connection.close();
-}).catch(err=>{
-        console.log(err)
-})*/
+})
 
-
-//concole.log(courses)
+app.listen(3000,()=>{
+        console.log("Started.......")
+})
